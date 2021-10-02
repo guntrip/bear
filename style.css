@@ -1,8 +1,26 @@
+body {
+  padding:0px;
+  margin:0px;
+}
+
+#g {
+  position:relative;
+  margin:none;
+  width:100%;
+  height:300px;
+  /*top:100px;*/
+}
+
 .bear {
   width:90px;
   height:90px;
   border-radius:35px;
   background-color: brown;
+  position: absolute;
+  top:10px;
+  left:10px;
+
+  z-index: 10;
 
   -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
   -moz-box-sizing: border-box;    /* Firefox, other Gecko */
@@ -13,4 +31,55 @@
   padding-top:25px;
   font-size: 15px;
   color: #fff;
+  border: 4px solid #000;
 }
+
+.boat {
+  position: absolute;
+  top:100px;
+  left:200px;
+
+  z-index: 20;
+
+  background-color: pink;
+  border-radius: 10px;
+
+}
+
+.cog {
+  position: absolute;
+  background-color: black;
+  border-radius: 5px;
+  width:10px;
+  height:10px;
+  z-index:100;
+}
+
+.river {
+  display:table;
+  empty-cells: show;
+  position:absolute;
+  width:100%;
+  bottom:0px;
+  left:0px;
+  right:0px;
+  top: 200px;
+
+
+  z-index: 30;
+}
+
+  .river>div {
+    display:table-cell;
+    position:relative;
+    height:100px;
+  }
+
+  .river>div>div {
+    position:absolute;
+    bottom:0px;
+    left:0px;
+    right:0px;
+    height:100px;
+    background-color: #639bff;
+  }
