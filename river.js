@@ -54,6 +54,13 @@ function setup_river() {
   left_land_edge=50
   right_land_edge = (w-150)
   land_y = 250
+
+  // Add background elements (extends colours down to the bottom of the window
+  var bgwater = document.createElement("div")
+  bgwater.classList.add("background_water")
+  bgwater.style.left=left_land_edge+"px"
+  bgwater.style.width=(w-50-150)+"px"
+  g.appendChild(bgwater)
 }
 
 function update_waves() {
@@ -109,4 +116,13 @@ function get_wave_bounce_at_x(x) {
     } else {
       return 0
     }
+}
+
+function update_wave_height() {
+  if (game.bear_completed<5) {
+    wave_height = 5
+  } else {
+    wave_height = 5 + ((game.bear_completed/50) * 65)
+    if (wave_height>70) wave_height = 70
+  }
 }

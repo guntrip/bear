@@ -23,7 +23,7 @@ var sink_angle = 13.5
 
 var cog = 0.5 // center of gravity
 var cog_angle_adjust=0.0
-var show_cog = true
+var show_cog = false
 
 function setup_boat() {
     boat_width = 150
@@ -32,7 +32,6 @@ function setup_boat() {
 
     var g = document.getElementById("g")
     boat = document.createElement("div")
-    boat.innerHTML = "i'm a boat"
     boat.classList.add("boat");
     boat.style.left = boat_x+"px"
     boat.style.top = boat_y +"px"
@@ -196,15 +195,24 @@ function boat_angle_check(rotation) {
 }
 
 function sink() {
-  sinking_progress += 0.001
+  sinking_progress += 0.0025
   if (sinking_progress>=1.0) {
-    alert("dead now")
+    // Kill everyone onboard, that will potentially end the game too
+    bears.bears.forEach(function(b) {
+      if (b.on_the_boat) {
+        b.on_the_boat=false
+        b.die()
+        b.sinking_corpse=true
+      }
+    })
+    // Calculate cog, which should rise us back up!
+    calculate_cog()
   }
 }
 
 function rise() {
   sinking_progress -= 0.01
-  if (sinking_progress<=1.0) {
+  if (sinking_progress<=0.0) {
     boat_is_rising=false
     sinking_progress=0
   }

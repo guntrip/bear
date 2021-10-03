@@ -7,9 +7,10 @@ Little web-based game about bears for Ludum Dare 49 Compo. The theme is **unstab
 ### To do
 
 * Don't leave shore when bears are still shuffling ✅
-* If dropping a bear on right-shore, boot into water
-* Can't drag bears beyond boat x
-* Bear death counter/max
+* If dropping a bear on right-shore, boot into water ✅
+* Can't drag bears beyond boat ✅
+* Bear death counter/max ✅
+* Wave height increase ✅
 
 And then..
 
@@ -19,3 +20,4 @@ And then..
 * Boat
 * Background
 * Story, messenging, instructions
+* Salmons??

@@ -1,6 +1,6 @@
 var bear_counter=0
-var min_bear_size=5
-var max_bear_size=75
+var min_bear_size=10
+var max_bear_size=95
 
 class Bear {
   constructor(weight) {
@@ -8,11 +8,13 @@ class Bear {
     this.id=bear_counter
     this.falling=false
     this.drowning=false
+    this.sinking_corpse=false
     this.drown_completion=0
     this.velocity=0.0
     this.flight={in_flight:false, peak:0, direction:0}
     this.panicking=false
     this.in_queue=true
+    this.complete=false
 
     // Spawn off screen:
     this.xy = {x:right_land_edge+250,y:land_y-this.weight}
@@ -40,8 +42,9 @@ class Bear {
   create_html() {
     var g = document.getElementById("g")
     this.element = document.createElement("div")
-    this.element.innerHTML = "^ o . o ^"
+    //this.element.innerHTML = ""
     this.element.classList.add("bear");
+    this.element.classList.add("normal");
     this.element.id = this.id
     this.element.addEventListener("click", bear_click, false);
 
@@ -49,10 +52,51 @@ class Bear {
     this.element.style.width = this.weight+"px"
     this.element.style.height = this.weight+"px"
     this.element.style.borderRadius = (this.weight/3)+"px"
-    
+      
+      // Ears
+      var ear_size = this.weight/8
+      var e1 = document.createElement("div")
+      e1.classList.add("ear")
+      e1.style.width=(ear_size)+"px"
+      e1.style.height=(ear_size)+"px"
+      e1.style.top="-"+(ear_size-2)+"px"
+      e1.style.left=(this.weight/6)+"px"
+      this.element.appendChild(e1)
+      var e2 = document.createElement("div")
+      e2.classList.add("ear")
+      e2.style.width=(ear_size)+"px"
+      e2.style.height=(ear_size)+"px"
+      e2.style.top="-"+(ear_size-2)+"px"
+      e2.style.right=(this.weight/6)+"px"
+      this.element.appendChild(e2)
 
+      // Feets
+      var foot_size = this.weight/8
+      var f1 = document.createElement("div")
+      f1.classList.add("foot")
+      f1.style.width=(foot_size)+"px"
+      f1.style.height=(foot_size)+"px"
+      f1.style.bottom="-"+(foot_size-2)+"px"
+      f1.style.left=(this.weight/5)+"px"
+      this.element.appendChild(f1)
+      var f2 = document.createElement("div")
+      f2.classList.add("foot")
+      f2.style.width=(foot_size)+"px"
+      f2.style.height=(foot_size)+"px"
+      f2.style.bottom="-"+(foot_size-2)+"px"
+      f2.style.right=(this.weight/5)+"px"
+      this.element.appendChild(f2)
 
     g.appendChild(this.element)
+  }
+
+  mood(m) {
+    this.element.classList.remove("normal");
+    this.element.classList.remove("happy");
+    this.element.classList.remove("panic");
+    this.element.classList.remove("down");
+    this.element.classList.remove("dead");
+    this.element.classList.add(m);
   }
 
   set_position() {
@@ -66,9 +110,9 @@ class Bear {
   }
 
   pick_up() {
-    this.element.innerHTML = "^ > . < ^"
     // if we're falling or something, stop that
     this.stop()
+    this.mood("down")
     this.on_the_boat=false
     calculate_cog()
 
@@ -88,10 +132,11 @@ class Bear {
     this.shuffling=false
     this.lfo_active=false
     this.animation_xy={x:0,y:0}
+    this.mood("normal")
   }
 
   drop() {
-    this.element.innerHTML = "^ @ . @ ^"
+    this.mood("normal")
     this.falling = true
   }
 
@@ -120,14 +165,14 @@ class Bear {
 
       if ( (bear_location.x > boat_location.x - (bear_location.width/3)) && ((bear_location.x + bear_location.width < boat_location.x + boat_location.width + (bear_location.width/3))) ) {
         this.stop()
-        this.element.innerHTML = "^ O . O ^"
+        this.mood("happy")
         this.on_the_boat=true
         this.x_position_on_boat = bear_location.x - boat_location.x
         calculate_cog()
         return
       } else {
         this.stop()
-        this.element.innerHTML = "^ X . X ^"
+        this.mood("panic")
         this.drowning = true
         this.drown_completion = 0
         // splash
@@ -166,7 +211,6 @@ class Bear {
     })
     if (colliding_with_a_bear>0||colliding_with_a_bear<0) {
         this.stop()
-        this.element.innerHTML=":C"
         // Ping them off
         this.flight.in_flight=true
         this.flight.direction=colliding_with_a_bear
@@ -194,30 +238,47 @@ class Bear {
   }
 
   drown() {
-    // Bob
-    var drown_movement = this.drown_completion * 100
-    this.drown_completion += 0.001 // << drowning rate
-    this.animation_xy.y = 25 - get_wave_bounce_at_x(this.xy.x) + drown_movement
-    this.set_position()
-    if (this.drown_completion>=1.0) this.die()
+    // Bob up and down and drown for a while and then just sink >.<
+    if (this.drowning) {
+      var drown_movement = this.drown_completion * 100
+      this.drown_completion += 0.001 // << drowning rate
+      this.animation_xy.y = 25 - get_wave_bounce_at_x(this.xy.x) + drown_movement
+      this.set_position()
+      if (this.drown_completion>=1.0) {
+         this.die()
+         this.sinking_corpse=true
+         this.drowning=false
+         this.xy.y += 25 - get_wave_bounce_at_x(this.xy.x) + drown_movement
+         this.animation_xy.y = 0
+      }
+    } else {
+      this.xy.y += 0.5
+      this.element.style.transform="rotate("+(this.xy.y-game.water_line-100)+"deg)"
+      this.set_position()
+      if (this.xy.y >= window.innerHeight - this.weight) {
+        this.sinking_corpse=false
+        this.complete=true
+      }
+    }
   }
 
   die() {
     this.stop()
     game.bear_deaths += 1
     add_to_count(0)
+    this.mood("dead")
     if (game.bear_deaths == game.bear_deaths_allowed) {
       game_over()
     }
   }
 
   panic() {
-    this.element.innerHTML="AAH"
+    this.element.classList.add("panic");
     this.panicking=true
   }
 
   stop_panicking() {
-    this.element.innerHTML=":3"
+    this.element.classList.add("normal");
     this.panicking=false
   }
 
@@ -261,6 +322,9 @@ class Bear {
         if (this.shuffling_off_the_boat) {
           this.shuffling_off_the_boat=false
           add_to_count(1) // score
+          update_wave_height()
+          this.complete=true
+          this.element.remove()
         }
       }
 
@@ -269,12 +333,14 @@ class Bear {
   }
 
   get_out_of_boat() {
+    this.stop()
     this.shuffling=true
     this.shuffling_target_x = 0 - this.weight
     this.lfo_active=true
     this.on_the_boat=false
     this.xy.y=land_y-this.weight
     this.shuffling_off_the_boat=true
+    this.element.classList.add("happy");
     calculate_cog()
   }
 
@@ -334,12 +400,14 @@ function bear_click(e) {
 
 
   if (game.bear_picked_up == bear_id) {
-    // drop
-    bears.bears[bear_id].drop()
-    game.bear_picked_up=-1
+    // drop if we're over the water
+    if (bears.bears[bear_id].xy.x > left_land_edge && bears.bears[bear_id].xy.x < right_land_edge - bears.bears[bear_id].weight ) {
+      bears.bears[bear_id].drop()
+      game.bear_picked_up=-1
+    }
   } else {
     // you can still pick up bears on the boat when it's in progress but not land-bears
-    if (boat_is_docked_on_right || (bears.bears[bear_id].on_the_boat)) {
+    if (boat_is_docked_on_right || (bears.bears[bear_id].on_the_boat) || (bears.bears[bear_id].drowning)) {
       bears.bears[bear_id].pick_up()
       game.bear_picked_up = this.id
 
@@ -357,7 +425,7 @@ function update_bears() {
     if (b.falling) b.fall()
     if (b.flight.in_flight) b.move_in_flight()
     if (b.animated) b.animation_step()
-    if (b.drowning) b.drown()
+    if (b.drowning || b.sinking_corpse) b.drown()
     if (b.lfo_active) b.lfo_step()
     if (b.shuffling) b.shuffle()
   })

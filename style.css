@@ -1,14 +1,19 @@
+html {
+  height: 100%;
+}
 body {
   padding:0px;
   margin:0px;
+  position:relative;
+  height: 100%;
 }
 
 #g {
   position:relative;
   margin:none;
-  width:100%;
-  height:300px;
-  /*top:100px;*/
+  height: 100%;
+  overflow:hidden;
+  background-color: #b3c9cc;
 }
 
 .status {
@@ -32,12 +37,46 @@ body {
   -moz-box-sizing: border-box;    /* Firefox, other Gecko */
   box-sizing: border-box;         /* Opera/IE 8+ */
 
+  image-rendering: crisp-edges;
+  background-position: center 15%;
+  background-repeat: no-repeat;
+  background-size: 35% 35%;
+
+  -webkit-box-shadow: 0px 10px 33px -3px rgba(0,0,0,0.56); 
+  box-shadow: 0px 10px 33px -3px rgba(0,0,0,0.56);
+
   /*temp*/
   text-align: center;
-  padding-top:25px;
-  font-size: 15px;
+  font-size: 0px;
   color: #fff;
-  border: 4px solid #000;
+  /*border: 4px solid #000;*/
+}
+
+  .normal {
+    background-image: url("face_normal.png");
+  }
+  .happy {
+    background-image: url("face_happy.png");
+  }
+  .panic {
+    background-image: url("face_panic.png");
+  }
+  .down {
+    background-image: url("face_down.png");
+  }
+  .dead {
+    background-image: url("face_dead.png");
+  }
+
+.ear {
+  background-color: brown;
+  border-radius:3px;
+  position: absolute;
+}
+.foot {
+  background-color: brown;
+  border-radius:1px;
+  position: absolute;
 }
 
 .boat {
@@ -47,9 +86,13 @@ body {
 
   z-index: 20;
 
-  background-color: pink;
-  border-radius: 10px;
-
+  background-image:
+    linear-gradient(0deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 76%, rgba(50,50,50,0.25) 100%),
+    url('boat.png');
+  /*background-image: url("grass.png");*/
+  background-repeat: repeat;
+  border-bottom-left-radius: 35px;
+  border-bottom-right-radius: 35px;
 }
 
 .cog {
@@ -89,18 +132,27 @@ body {
     left:0px;
     right:0px;
     height:100px;
-    background-color: #639bff;
     pointer-events: none;
+
+    background: rgb(68,112,143);
+    background: linear-gradient(0deg, rgba(68,112,143,1) 0%, rgba(68,112,143,1) 35%, rgba(68,112,143,1) 68%, rgba(199,224,230,1) 100%);
+    opacity:0.9;
   }
 
 .land {
-  background-color: red;
   position:absolute;
-  width:100%;
+  /*width:100%;*/
   bottom:0px;
   left:0px;
   right:0px;
   top: 225px;
+
+  background-image:
+    linear-gradient(0deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 76%, rgba(50,50,50,0.25) 100%),
+    url('grass.png');
+  /*background-image: url("grass.png");*/
+  background-repeat: repeat;
+
 }
 
   .land.left {
@@ -110,3 +162,12 @@ body {
     border-top-left-radius: 20px;
   }
 
+.background_water {
+  position:absolute;
+  z-index:0;
+  background: rgb(68,112,143);
+  opacity:0.9;
+  top:300px;
+  bottom:0px;
+  z-index: 30;
+}
