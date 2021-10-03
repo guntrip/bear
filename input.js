@@ -1,5 +1,15 @@
 function setup_input() {
-  document.getElementById("g").addEventListener("mousemove", mouse_movement, false);
+
+  if (!game.restarting) document.getElementById("g").addEventListener("mousemove", mouse_movement, false);
+
+  document.addEventListener('click', function (event) {
+    if (game.welcome_open) {
+      close_welcome()
+    }
+    if (game.game_over_open) {
+      close_game_over()
+    }
+  })
 
 }
 

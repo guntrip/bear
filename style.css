@@ -6,6 +6,24 @@ body {
   margin:0px;
   position:relative;
   height: 100%;
+  font-family: "Gill Sans", sans-serif;
+}
+
+.nice_ui_thing {
+  position:absolute;
+  background-color: #c25f1c;
+  border: 5px solid #a3490c;
+  z-index:150;
+  display:none;
+  padding:15px;
+  border-radius:15px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;  
+  box-sizing: border-box;
+  -webkit-box-shadow: 0px 10px 33px -3px rgba(0,0,0,0.56); 
+  box-shadow: 0px 10px 33px -3px rgba(0,0,0,0.56);
+  text-align:center;
+  color:#f5f0ed;
 }
 
 #g {
@@ -18,9 +36,22 @@ body {
 
 .status {
   position: absolute;
-  background-color: pink;
+  background-color: #fff;
+  color:#5f5f5f;
   text-align:center;
+  border-radius:3px;
+  -webkit-box-shadow: 0px 10px 33px -3px rgba(0,0,0,0.56); 
+  box-shadow: 0px 10px 33px -3px rgba(0,0,0,0.56);
 }
+
+.bear_life {
+  display:inline-block;
+  background-image: url('bear_marker.png');
+  background-repeat: no-repeat;
+  width:14px;
+  height:14px;
+}
+.bear_life.death { background-image: url('bear_marker_dead.png');  }
 
 .bear {
   width:90px;
@@ -33,9 +64,9 @@ body {
 
   z-index: 10;
 
-  -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-  -moz-box-sizing: border-box;    /* Firefox, other Gecko */
-  box-sizing: border-box;         /* Opera/IE 8+ */
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;  
+  box-sizing: border-box; 
 
   image-rendering: crisp-edges;
   background-position: center 15%;
