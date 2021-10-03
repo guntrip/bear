@@ -230,6 +230,7 @@ function boat_power_apply() {
   }
 
   if (boat_direction==true) {
+    
     boat_x -= (boat_power*2)
 
     if (boat_x <= left_land_edge + 10) {
@@ -279,6 +280,7 @@ function boat_click() {
   }
 
   if (game.bear_picked_up>-1) go = false
+  if (boat_is_sinking || boat_is_rising) go = false
 
   if (go) boat_powering_up=true // will quickly ramp up boat-power
 }
