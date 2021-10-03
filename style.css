@@ -212,3 +212,14 @@ body {
   bottom:0px;
   z-index: 30;
 }
+
+.muter {
+  position:absolute;
+  z-index:200;
+  top: 5px;
+  right: 25px;
+  opacity:1.0;
+}
+.muter.muted {
+  opacity:0.2;
+}

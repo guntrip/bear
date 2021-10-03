@@ -138,6 +138,7 @@ class Bear {
   drop() {
     this.mood("normal")
     this.falling = true
+    this.check_for_collision()
   }
 
   snap_to_cursor() {
@@ -402,8 +403,22 @@ function bear_click(e) {
   if (game.bear_picked_up == bear_id) {
     // drop if we're over the water
     if (bears.bears[bear_id].xy.x > left_land_edge && bears.bears[bear_id].xy.x < right_land_edge - bears.bears[bear_id].weight ) {
-      bears.bears[bear_id].drop()
-      game.bear_picked_up=-1
+      // If we're currently overlapping another bear, it's a NO :C
+      var overlapping=false
+      bears.bears.forEach(function(b) {
+        if (b.on_the_boat) {
+          if (bears.bears[bear_id].xy.x + bears.bears[bear_id].weight > b.xy.x && bears.bears[bear_id].xy.x< b.xy.x + b.weight) {
+            // we're horizontally in line, check if we're veritcally overlapping
+            if (bears.bears[bear_id].xy.y + bears.bears[bear_id].weight > b.xy.y && bears.bears[bear_id].xy.y< b.xy.y + b.weight) {
+              overlapping=true
+            }
+          }
+        }
+      })
+      if (!overlapping) {
+        bears.bears[bear_id].drop()
+        game.bear_picked_up=-1
+      }
     }
   } else {
     // you can still pick up bears on the boat when it's in progress but not land-bears

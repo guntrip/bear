@@ -33,5 +33,22 @@ document.addEventListener("DOMContentLoaded", function(event) {
   setInterval(loop, engineConfig.interval)
   setInterval(update_waves, engineConfig.wave_interval)
 
+  var music = document.getElementById("music");
+  music.muted = false; 
+
 });
 
+var muted=false
+function mute() {
+  var music = document.getElementById("music");
+  var muter = document.getElementById("muter");
+  if (muted) {
+    music.muted = false; 
+    muted=false;
+    muter.classList.remove("muted");
+  } else {
+    music.muted = true; 
+    muted=true;
+    muter.classList.add("muted");
+  }
+}
