@@ -407,7 +407,7 @@ function bear_click(e) {
     }
   } else {
     // you can still pick up bears on the boat when it's in progress but not land-bears
-    if (boat_is_docked_on_right || (bears.bears[bear_id].on_the_boat) || (bears.bears[bear_id].drowning)) {
+    if ((boat_is_docked_on_right || (bears.bears[bear_id].on_the_boat) || (bears.bears[bear_id].drowning))&&(!bears.bears[bear_id].sinking_corpse && !bears.bears[bear_id].complete)) {
       bears.bears[bear_id].pick_up()
       game.bear_picked_up = this.id
 

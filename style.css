@@ -194,6 +194,7 @@ body {
   }
 
 .background_water {
+  pointer-events: none;
   position:absolute;
   z-index:0;
   background: rgb(68,112,143);

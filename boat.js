@@ -278,5 +278,7 @@ function boat_click() {
     }
   }
 
+  if (game.bear_picked_up>-1) go = false
+
   if (go) boat_powering_up=true // will quickly ramp up boat-power
 }
