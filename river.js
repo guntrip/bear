@@ -119,10 +119,10 @@ function get_wave_bounce_at_x(x) {
 }
 
 function update_wave_height() {
-  if (game.bear_completed<5) {
+  if (game.crossings_complete<3) {
     wave_height = 5
   } else {
-    wave_height = 5 + ((game.bear_completed/50) * 65)
+    wave_height = 5 + ((game.crossings_complete/25) * 65)
     if (wave_height>70) wave_height = 70
   }
 }

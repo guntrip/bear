@@ -237,6 +237,7 @@ function boat_power_apply() {
       boat_power=0
       boat_powering_up=false
       boat_is_docked_on_left=true
+      game.crossings_complete += 1
 
       // get out bears
       bears.bears.forEach(function(b) {

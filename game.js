@@ -6,6 +6,7 @@ var game = {
   click_offset:{x:0,y:0},
   mouse:{x:0,y:0},
   water_line: 250,
+  crossings_complete:0, // for weather
   bear_completed: 0,
   bear_deaths: 0,
   bear_deaths_allowed: 5,
