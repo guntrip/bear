@@ -12,6 +12,7 @@ class Bear {
     this.velocity=0.0
     this.xy = {x:50+(Math.random()*300),y:50}
     this.flight={in_flight:false, peak:0, direction:0}
+    this.panicking=false
 
     this.on_the_boat=false
     this.x_position_on_boat=0
@@ -44,8 +45,13 @@ class Bear {
   }
 
   set_position() {
-    this.element.style.left = (this.xy.x + this.animation_xy.x) + "px"
-    this.element.style.top = (this.xy.y + this.animation_xy.y) + "px"
+    var ex_x=0,ex_y=0
+    if (this.panicking) {
+      ex_x = -4 + (Math.random()*8.0)
+      ex_y = -4 + (Math.random()*8.0)
+    }
+    this.element.style.left = (this.xy.x + this.animation_xy.x) + ex_x + "px"
+    this.element.style.top = (this.xy.y + this.animation_xy.y) + ex_y + "px"
   }
 
   pick_up() {
@@ -62,6 +68,7 @@ class Bear {
     this.flight.in_flight=false
     this.animated=false
     this.drowning=false
+    this.panicking=false
     this.animation_xy={x:0,y:0}
   }
 
@@ -88,7 +95,8 @@ class Bear {
     // Is the bottom of the bear in line with the bottom of the boat?
     var bear_location = this.element.getBoundingClientRect()
     var bear_bottom = this.xy.y + bear_location.height
-    if (bear_bottom >= game.water_line) {
+    var bear_waterline = boat_y
+    if (bear_bottom >= bear_waterline) {
       // Are we in a boat or not?
       var boat_location = boat.getBoundingClientRect()
 
@@ -97,11 +105,16 @@ class Bear {
         this.element.innerHTML = "^ O . O ^"
         this.on_the_boat=true
         calculate_cog()
+        return
       } else {
         this.stop()
         this.element.innerHTML = "^ X . X ^"
         this.drowning = true
         this.drown_completion = 0
+        // splash
+        this.xy.y += (this.weight/2)
+        this.set_position()
+        return
       }
     }
 
@@ -172,6 +185,16 @@ class Bear {
 
   die() {
     this.stop()
+  }
+
+  panic() {
+    this.element.innerHTML="AAH"
+    this.panicking=true
+  }
+
+  stop_panicking() {
+    this.element.innerHTML=":3"
+    this.panicking=false
   }
 
   animation_step() {

@@ -16,6 +16,11 @@ function loop() {
   update_bears()
 
   move_boat()
+
+
+  if (boat_is_sinking) sink()
+  if (boat_is_rising) rise()
+
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
@@ -25,5 +30,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
   // Set the loop
   setInterval(loop, engineConfig.interval)
   setInterval(update_waves, engineConfig.wave_interval)
+
 });
 

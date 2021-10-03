@@ -4,11 +4,16 @@ var boat_x=0
 var boat_y=0
 var boat_width=0
 
+var boat_is_sinking=false
+var boat_is_rising=false
+var sinking_progress=0.0
+
 var angle_animate = false
 var angle_animate_increment = 0.1
 var angle_target = 0
 
-var boat_capacity=250 // 
+var boat_capacity=250 // max on either side
+var sink_angle = 17.5
 
 var cog = 0.5 // center of gravity
 var cog_angle_adjust=0.0
@@ -43,7 +48,7 @@ function setup_boat() {
 }
 
 function move_boat() {
-  boat_y = ((game.water_line - 30) - get_wave_bounce_at_x(boat_x+(boat_width/2)))
+  boat_y = (((game.water_line - 30) - get_wave_bounce_at_x(boat_x+(boat_width/2)))) + (120.0 * sinking_progress)
   boat.style.top = boat_y + "px"
 
   // Shall we rotate it (a bit..), let's see where the wave height is at the extremes and see
@@ -57,16 +62,18 @@ function move_boat() {
   }*/
   var rotation = cog_angle_adjust + ((left_height - right_height)*0.3)
   boat.style.transform="rotate("+rotation+"deg)"
+  boat_angle_check(rotation)
 
   move_boat_occupants()
 
   if (angle_animate) animate_boat_angle()
+
 }
 
 function move_boat_occupants() {
   bears.bears.forEach(function(b) {
     if (b.on_the_boat) {
-      b.xy.y = boat_y - 45
+      b.xy.y = boat_y - (b.weight/2)
       b.set_position()
     }
   })
@@ -134,18 +141,6 @@ function calculate_cog() {
         angle_animate=true
   }
 
-  // 0.5 for l==r..
-  /*if (right_lean>left_lean) {
-    cog = 0.5 + ((left_lean/right_lean)/2)
-    console.log((left_lean/right_lean))
-  }
-  if (right_lean==left_lean) {
-    cog=0.5
-  }
-  if (left_lean>right_lean) {
-    cog = ((right_lean/left_lean)/2)
-  }*/
-
   if (show_cog) {
       var c = document.getElementById("cog_disp")
       c.style.left = boat_x + (cog * boat_width) - 5 /*cog width*/ + "px"   
@@ -166,5 +161,45 @@ function animate_boat_angle() {
       cog_angle_adjust=angle_target
       angle_animate=false
     }
+  }
+}
+
+function boat_angle_check(rotation) {
+  if (rotation>sink_angle || rotation<0-sink_angle) {
+    if (!boat_is_sinking) {
+      boat_is_sinking=true
+      sinking_progress=0.0
+      bears.bears.forEach(function(b) {
+        if (b.on_the_boat) {
+          b.panic()
+        }
+      })
+    }
+  } else {
+    if (boat_is_sinking) {
+      // not anymore!
+      boat_is_sinking=false
+      boat_is_rising=true
+      bears.bears.forEach(function(b) {
+        if (b.on_the_boat) {
+          b.stop_panicking()
+        }
+      })
+    }
+  }
+}
+
+function sink() {
+  sinking_progress += 0.001
+  if (sinking_progress>=1.0) {
+    alert("dead now")
+  }
+}
+
+function rise() {
+  sinking_progress -= 0.01
+  if (sinking_progress<=1.0) {
+    boat_is_rising=false
+    sinking_progress=0
   }
 }
