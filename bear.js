@@ -1,6 +1,6 @@
 var bear_counter=0
 var min_bear_size=5
-var max_bear_size=150
+var max_bear_size=75
 
 class Bear {
   constructor(weight) {
@@ -27,6 +27,7 @@ class Bear {
 
     this.shuffling=false
     this.shuffling_target_x=0
+    this.shuffling_off_the_boat=false
 
     this.lfo_active=false
     this.lfo_dir=true
@@ -203,6 +204,11 @@ class Bear {
 
   die() {
     this.stop()
+    game.bear_deaths += 1
+    add_to_count(0)
+    if (game.bear_deaths == game.bear_deaths_allowed) {
+      game_over()
+    }
   }
 
   panic() {
@@ -252,6 +258,10 @@ class Bear {
         this.shuffling=false
         this.lfo_active=false
         this.animation_xy.y = 0
+        if (this.shuffling_off_the_boat) {
+          this.shuffling_off_the_boat=false
+          add_to_count(1) // score
+        }
       }
 
       this.set_position()
@@ -264,6 +274,7 @@ class Bear {
     this.lfo_active=true
     this.on_the_boat=false
     this.xy.y=land_y-this.weight
+    this.shuffling_off_the_boat=true
     calculate_cog()
   }
 

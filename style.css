@@ -11,6 +11,12 @@ body {
   /*top:100px;*/
 }
 
+.status {
+  position: absolute;
+  background-color: pink;
+  text-align:center;
+}
+
 .bear {
   width:90px;
   height:90px;

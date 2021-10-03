@@ -18,15 +18,15 @@ var angle_animate = false
 var angle_animate_increment = 0.1
 var angle_target = 0
 
-var boat_capacity=250 // max on either side
-var sink_angle = 17.5
+var boat_capacity=100 // max on either side
+var sink_angle = 13.5
 
 var cog = 0.5 // center of gravity
 var cog_angle_adjust=0.0
 var show_cog = true
 
 function setup_boat() {
-    boat_width = 250
+    boat_width = 150
     boat_x = right_land_edge - boat_width - 10
     boat_y = (game.water_line - 30)
 
@@ -251,18 +251,24 @@ function boat_power_apply() {
 }
 
 function boat_click() {
+  var go = true
   // Set direction if we're docked
   if (boat_is_docked_on_right) {
     boat_direction=true
     boat_is_docked_on_right=false
   }
+
   if (boat_is_docked_on_left) {
-    boat_direction=false
-    boat_is_docked_on_left=false
+    bears.bears.forEach(function(b) {
+      if (b.shuffling_off_the_boat) {
+        go = false
+      }
+    })
+    if (go) {
+      boat_direction=false
+      boat_is_docked_on_left=false
+    }
   }
 
-  boat_powering_up=true // will quickly ramp up boat-power
-
-
-  console.log("feeeeeck")
+  if (go) boat_powering_up=true // will quickly ramp up boat-power
 }

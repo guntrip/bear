@@ -19,7 +19,7 @@ function setup_river() {
   r.addEventListener("click", general_click, false);
 
   var w = window.innerWidth
-  r.style.width = (w - 250) + "px"
+  r.style.width = (w - 200) + "px"
   r.style.left = "50px"
 
 
@@ -47,12 +47,12 @@ function setup_river() {
   var right_land = document.createElement("div")
   right_land.classList.add("land")
   right_land.classList.add("right")
-  right_land.style.left=(w - 200)+"px"
-  right_land.width="200px"
+  right_land.style.left=(w - 150)+"px"
+  right_land.width="150px"
   g.appendChild(right_land)
 
   left_land_edge=50
-  right_land_edge = (w-200)
+  right_land_edge = (w-150)
   land_y = 250
 }
 

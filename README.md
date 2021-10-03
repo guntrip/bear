@@ -6,4 +6,16 @@ Little web-based game about bears for Ludum Dare 49 Compo. The theme is **unstab
 
 ### To do
 
-* [ ] Am I just going to do this with JavaScript alone? Is there a nice library? I don't know if I want to learn a thing, I think I might force JavaScript to do my bidding.
+* Don't leave shore when bears are still shuffling ✅
+* If dropping a bear on right-shore, boot into water
+* Can't drag bears beyond boat x
+* Bear death counter/max
+
+And then..
+
+* Styles for water and land
+* Bear face sprites
+* Bear ears and limbs
+* Boat
+* Background
+* Story, messenging, instructions
