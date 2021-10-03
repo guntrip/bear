@@ -8,6 +8,12 @@ var boat_is_sinking=false
 var boat_is_rising=false
 var sinking_progress=0.0
 
+var boat_is_docked_on_right=true
+var boat_is_docked_on_left=false
+var boat_direction=true // true: going to the left, false: going to the right
+var boat_power=0.0
+var boat_powering_up=false
+
 var angle_animate = false
 var angle_animate_increment = 0.1
 var angle_target = 0
@@ -20,8 +26,8 @@ var cog_angle_adjust=0.0
 var show_cog = true
 
 function setup_boat() {
-    boat_width = 400
-    boat_x = 200
+    boat_width = 250
+    boat_x = right_land_edge - boat_width - 10
     boat_y = (game.water_line - 30)
 
     var g = document.getElementById("g")
@@ -32,7 +38,7 @@ function setup_boat() {
     boat.style.top = boat_y +"px"
     boat.style.width = boat_width+"px"
     boat.style.height = "65px"
-    boat.addEventListener("click", general_click, false);
+    boat.addEventListener("click", boat_click, false);
     g.appendChild(boat)
 
     if (show_cog) {
@@ -50,6 +56,7 @@ function setup_boat() {
 function move_boat() {
   boat_y = (((game.water_line - 30) - get_wave_bounce_at_x(boat_x+(boat_width/2)))) + (120.0 * sinking_progress)
   boat.style.top = boat_y + "px"
+  boat.style.left = boat_x + "px"
 
   // Shall we rotate it (a bit..), let's see where the wave height is at the extremes and see
   // if we can figure out a direction..
@@ -74,6 +81,7 @@ function move_boat_occupants() {
   bears.bears.forEach(function(b) {
     if (b.on_the_boat) {
       b.xy.y = boat_y - (b.weight/2)
+      b.xy.x = boat_x + b.x_position_on_boat
       b.set_position()
     }
   })
@@ -127,19 +135,17 @@ function calculate_cog() {
     }
   }
 
-  // Adjust rotatation
-  if (cog!=0.5) {      
-      if (cog>0.5) {
-        var multiplier = right_lean / boat_capacity
-        angle_target = (((cog-0.5)*2) * multiplier) * 30
-        angle_animate_increment = ((cog-0.5)*2) * 0.3
-      } else {
-        var multiplier = left_lean / boat_capacity
-        angle_target = 0 - ( (((0.5-cog)*2) * multiplier) * 30 )
-        angle_animate_increment = (1.0-((cog)*2)) * 0.3
-      }
-        angle_animate=true
+  // Adjust rotatation    
+  if (cog>0.5) {
+    var multiplier = right_lean / boat_capacity
+    angle_target = (((cog-0.5)*2) * multiplier) * 30
+    angle_animate_increment = ((cog-0.5)*2) * 0.3
+  } else {
+    var multiplier = left_lean / boat_capacity
+    angle_target = 0 - ( (((0.5-cog)*2) * multiplier) * 30 )
+    angle_animate_increment = (1.0-((cog)*2)) * 0.3
   }
+  angle_animate=true
 
   if (show_cog) {
       var c = document.getElementById("cog_disp")
@@ -202,4 +208,61 @@ function rise() {
     boat_is_rising=false
     sinking_progress=0
   }
+}
+
+function boat_power_apply() {
+  // called by loop when we're powering up or there's boat power
+  if (boat_powering_up) {
+    // Up power
+    boat_power += 0.05
+    if (boat_power>=1.0) boat_powering_up=false
+  } else {
+    // Lose power
+    boat_power -= 0.01
+  }
+
+  if (boat_direction==true) {
+    boat_x -= (boat_power*2)
+
+    if (boat_x <= left_land_edge + 10) {
+      boat_power=0
+      boat_powering_up=false
+      boat_is_docked_on_left=true
+
+      // get out bears
+      bears.bears.forEach(function(b) {
+        if (b.on_the_boat) {
+          b.get_out_of_boat()
+        }
+      })
+
+    }
+
+  } else {
+    boat_x += (boat_power*2)
+
+    if (boat_x >= right_land_edge - boat_width - 10) {
+      boat_power=0
+      boat_powering_up=false
+      boat_is_docked_on_right=true
+    }
+
+  }
+}
+
+function boat_click() {
+  // Set direction if we're docked
+  if (boat_is_docked_on_right) {
+    boat_direction=true
+    boat_is_docked_on_right=false
+  }
+  if (boat_is_docked_on_left) {
+    boat_direction=false
+    boat_is_docked_on_left=false
+  }
+
+  boat_powering_up=true // will quickly ramp up boat-power
+
+
+  console.log("feeeeeck")
 }

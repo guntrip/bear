@@ -15,6 +15,8 @@ function loop() {
   // Update bear positions
   update_bears()
 
+  if (boat_powering_up || boat_power>0.0) boat_power_apply()
+
   move_boat()
 
 

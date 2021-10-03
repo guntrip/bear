@@ -3,6 +3,10 @@ var river_width = 0
 var river_bits = 100 // TODO: figure this out by width
 var wave_height_adjust = []
 
+var left_land_edge=0
+var right_land_edge=0
+var land_y=0
+
 var wave_speed = 0.5
 var wave_height = 5//60
 var wave_width = 30
@@ -13,6 +17,10 @@ function setup_river() {
   var r = document.createElement("div")
   r.classList.add("river");
   r.addEventListener("click", general_click, false);
+
+  var w = window.innerWidth
+  r.style.width = (w - 250) + "px"
+  r.style.left = "50px"
 
 
   for (let i = 0; i < river_bits; i++) {
@@ -27,6 +35,25 @@ function setup_river() {
   g.appendChild(r)
 
   river_width = r.getBoundingClientRect().width
+
+  // Add land :3
+  var left_land = document.createElement("div")
+  left_land.classList.add("land")
+  left_land.classList.add("left")
+  left_land.style.left="0px"
+  left_land.style.width="50px"
+  g.appendChild(left_land)
+
+  var right_land = document.createElement("div")
+  right_land.classList.add("land")
+  right_land.classList.add("right")
+  right_land.style.left=(w - 200)+"px"
+  right_land.width="200px"
+  g.appendChild(right_land)
+
+  left_land_edge=50
+  right_land_edge = (w-200)
+  land_y = 250
 }
 
 function update_waves() {
@@ -75,6 +102,7 @@ function update_waves() {
 }
 
 function get_wave_bounce_at_x(x) {
+    x -= left_land_edge
     var approx_x = parseInt((x / river_width) * river_bits)
     if (approx_x <= wave_height_adjust.length) {
       return wave_height_adjust[approx_x]

@@ -14,8 +14,6 @@ function setup_game() {
   setup_river()
   setup_boat()
 
-  bears.spawn()
-  bears.spawn()
-  bears.spawn()
+  bears.queue_up_bears(true)
 
 }

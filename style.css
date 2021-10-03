@@ -59,12 +59,13 @@ body {
   display:table;
   empty-cells: show;
   position:absolute;
-  width:100%;
+  /*width:100%;*/
+  width:800px;
   bottom:0px;
-  left:0px;
-  right:0px;
+  left:85px;
+  right:200px;
   top: 200px;
-
+  pointer-events: none;
 
   z-index: 30;
 }
@@ -73,6 +74,7 @@ body {
     display:table-cell;
     position:relative;
     height:100px;
+    pointer-events: none;
   }
 
   .river>div>div {
@@ -82,4 +84,23 @@ body {
     right:0px;
     height:100px;
     background-color: #639bff;
+    pointer-events: none;
   }
+
+.land {
+  background-color: red;
+  position:absolute;
+  width:100%;
+  bottom:0px;
+  left:0px;
+  right:0px;
+  top: 225px;
+}
+
+  .land.left {
+    border-top-right-radius: 20px;
+  }
+  .land.right {
+    border-top-left-radius: 20px;
+  }
+

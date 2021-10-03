@@ -10,9 +10,12 @@ class Bear {
     this.drowning=false
     this.drown_completion=0
     this.velocity=0.0
-    this.xy = {x:50+(Math.random()*300),y:50}
     this.flight={in_flight:false, peak:0, direction:0}
     this.panicking=false
+    this.in_queue=true
+
+    // Spawn off screen:
+    this.xy = {x:right_land_edge+250,y:land_y-this.weight}
 
     this.on_the_boat=false
     this.x_position_on_boat=0
@@ -21,6 +24,13 @@ class Bear {
     this.animation=""
     this.animation_progress=0
     this.animation_xy= {x:0,y:0}
+
+    this.shuffling=false
+    this.shuffling_target_x=0
+
+    this.lfo_active=false
+    this.lfo_dir=true
+    this.lfo=0.0
 
     this.create_html()
     bear_counter++
@@ -60,6 +70,11 @@ class Bear {
     this.stop()
     this.on_the_boat=false
     calculate_cog()
+
+    if (this.in_queue) {
+      this.in_queue=false
+      bears.queue_up_bears(false)
+    }
   }
 
   stop() {
@@ -69,6 +84,8 @@ class Bear {
     this.animated=false
     this.drowning=false
     this.panicking=false
+    this.shuffling=false
+    this.lfo_active=false
     this.animation_xy={x:0,y:0}
   }
 
@@ -104,6 +121,7 @@ class Bear {
         this.stop()
         this.element.innerHTML = "^ O . O ^"
         this.on_the_boat=true
+        this.x_position_on_boat = bear_location.x - boat_location.x
         calculate_cog()
         return
       } else {
@@ -213,6 +231,42 @@ class Bear {
     this.set_position()
   }
 
+  lfo_step() {
+    if (this.lfo_dir) {
+      this.lfo+=0.05
+      if (this.lfo>=1.0) this.lfo_dir=false
+    } else {
+      this.lfo-=0.05
+      if (this.lfo<=0.0) this.lfo_dir=true
+    }
+  }
+
+  shuffle() {
+    if (!this.animated) {
+      // everyday i'm shuffling :3
+      this.animation_xy.y = -10 * this.lfo
+      this.xy.x -= 0.3
+
+      if (this.xy.x <= this.shuffling_target_x) {
+        this.xy.x = this.shuffling_target_x
+        this.shuffling=false
+        this.lfo_active=false
+        this.animation_xy.y = 0
+      }
+
+      this.set_position()
+    }
+  }
+
+  get_out_of_boat() {
+    this.shuffling=true
+    this.shuffling_target_x = 0 - this.weight
+    this.lfo_active=true
+    this.on_the_boat=false
+    this.xy.y=land_y-this.weight
+    calculate_cog()
+  }
+
 }
 
 class Bears {
@@ -226,25 +280,64 @@ class Bears {
     return b
   }
 
+  queue_up_bears(on_boot) {
+    // Spawns bears and positions them in the queue. We want to see *three* bears at a time in the queue.
+    // Once a bear is out of the queue, it's up the player to find a space for it on the boat. It can't go back.
+    var bears_in_queue=0
+    this.bears.forEach(function(b) {
+      if (b.in_queue) bears_in_queue+=1
+    })
+
+    // Make sure we have bears in the queue
+    for (let i = 0; i < 3 - bears_in_queue; i++) {
+      this.spawn()
+    }
+
+    // Run through the bears, find those not in a queue, and position them
+    var bear_position = right_land_edge + 5
+    this.bears.forEach(function(b) {
+      if (b.in_queue) {
+        b.xy.y = land_y - b.weight
+
+        if (on_boot) {
+          // position bears
+          b.xy.x = bear_position
+        } else {
+          // shuffle bears
+          b.shuffling=true
+          b.shuffling_target_x = bear_position
+          b.lfo_active=true
+        }
+
+        b.set_position()
+        bear_position += b.weight+20
+      }
+    })
+
+  }
+
 }
 
 function bear_click(e) {
   var bear_id = e.target.id
+
 
   if (game.bear_picked_up == bear_id) {
     // drop
     bears.bears[bear_id].drop()
     game.bear_picked_up=-1
   } else {
-    // pick up
-    bears.bears[bear_id].pick_up()
-    game.bear_picked_up = this.id
+    // you can still pick up bears on the boat when it's in progress but not land-bears
+    if (boat_is_docked_on_right || (bears.bears[bear_id].on_the_boat)) {
+      bears.bears[bear_id].pick_up()
+      game.bear_picked_up = this.id
 
-    // offset
-    var bear_rect = e.target.getBoundingClientRect()
-    var game_rect = document.getElementById("g").getBoundingClientRect()
-    game.click_offset.x = game.mouse.x - bear_rect.left + game_rect.left
-    game.click_offset.y = game.mouse.y - bear_rect.top + game_rect.top
+      // offset
+      var bear_rect = e.target.getBoundingClientRect()
+      var game_rect = document.getElementById("g").getBoundingClientRect()
+      game.click_offset.x = game.mouse.x - bear_rect.left + game_rect.left
+      game.click_offset.y = game.mouse.y - bear_rect.top + game_rect.top
+    }
   }
 }
 
@@ -254,5 +347,7 @@ function update_bears() {
     if (b.flight.in_flight) b.move_in_flight()
     if (b.animated) b.animation_step()
     if (b.drowning) b.drown()
+    if (b.lfo_active) b.lfo_step()
+    if (b.shuffling) b.shuffle()
   })
 }
